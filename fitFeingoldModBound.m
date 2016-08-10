@@ -9,16 +9,24 @@
 % The input of the function are:
 % - w (diameter at septum divided by the max diameter)
 % - t (time)
+% - optional: wMax0: the first guess for the initial width/diameter. default is 1
+% for normalized widths, set it to ~500/600 for absolute diameter (in nm's).
 % The output of the function are the fitting parameters
 
-function [tc, tg, wMax, fitOut, resnorm, residual, BIC]  = fitFeingoldModBound(t, w)
-
-tc0 = 0;
+function [tc, tg, wMax, fitOut, resnorm, residual, BIC]  = fitFeingoldModBound(varargin)
+narginchk(2,3);
+t=varargin{1};
+w=varargin{2};
+if size(varargin,2)==2
+    wMax0 = 1;
+else
+    wMax0=varargin{3};
+end
+tc0 = min(t);
 tg0 = max(t);
-wMax0 = 1;
 a0 = [tc0,tg0,wMax0];
 lb =[0,0,0];
-ub =[max(t),Inf,1];
+ub =[max(t),Inf,wMax0*1.2];
 [a, resnorm, residual] = lsqcurvefit(@FeingoldModel, a0, t, w, lb, ub);
 tc = a(1);
 tg = a(2);
