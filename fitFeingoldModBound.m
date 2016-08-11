@@ -9,24 +9,29 @@
 % The input of the function are:
 % - w (diameter at septum divided by the max diameter)
 % - t (time)
-% - optional: wMax0: the first guess for the initial width/diameter. default is 1
-% for normalized widths, set it to ~500/600 for absolute diameter (in nm's).
+% - optional: tc
 % The output of the function are the fitting parameters
 
-function [tc, tg, wMax, fitOut, resnorm, residual, BIC]  = fitFeingoldModBound(varargin)
-narginchk(2,3);
-t=varargin{1};
-w=varargin{2};
-if size(varargin,2)==2
-    wMax0 = 1;
+function [tc, tg, wMax, fitOut, resnorm, residual, BIC]  = fitFeingoldModBound(t,w,varargin)
+narginchk(2,6);
+nparam=3;
+if size(varargin,2)== 0
+    tc0 = min(t);
+    ltc=0;
+    utc=max(t);
 else
-    wMax0=varargin{3};
+    tc0=varargin{1,1};
+    ltc=tc0;
+    utc=tc0;
+    nparam=nparam-1;
 end
-tc0 = min(t);
+wMax0=round(w(1)); % When w is normalized, this should be 1,
+%(unless w(1)<0.5, but this would be a useless cell anyway).
+% When fitting absolute diameters (in nm's) the rounding should be negligable.
 tg0 = max(t);
 a0 = [tc0,tg0,wMax0];
-lb =[0,0,0];
-ub =[max(t),Inf,wMax0*1.2];
+lb =[ltc,0,0.95*wMax0];
+ub =[utc,Inf,1.2*wMax0];
 [a, resnorm, residual] = lsqcurvefit(@FeingoldModel, a0, t, w, lb, ub);
 tc = a(1);
 tg = a(2);
@@ -34,7 +39,7 @@ wMax = a(3);
 
 % Compute the Bayesian information criterion
 numDataPoints = length(residual);
-BIC = numDataPoints*log(resnorm)+size(a,2)*log(numDataPoints);
+BIC = numDataPoints*log(resnorm)+nparam*log(numDataPoints);
 
 tFit = unique(sort(t));
 wFit = FeingoldModel(a,tFit);

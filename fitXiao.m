@@ -1,36 +1,57 @@
-function [tc, tg, wMax, alpha, fitOut, resnorm, residual, BIC]  = fitXiao(varargin)
+function [tc, tg, wMax, alpha, fitOut, resnorm, residual, BIC]  = fitXiao(t,w,varargin)
 % function [tc, tg, wMax, alpha, fitOut, resnorm, residual, BIC]  = fitXiao(t, w)
 % This function allows to compute the fit of the waist diameter, w, versus
 % time, t, to the Jiao model Xiao
 % The input of the function are:
-% - w (diameter at septum divided by the max diameter)
-% - t (time)
+% - t: vector timepoints
+% - w: vector containing diameter at septum divided by the max diameter for
+% the respective timepoints
+% Optional inputs:
+% fitXiao(t,w,'alpha',a): fixes the alpha parameter to the value of a
+% fitXiao(t,w,'tc',tc): fixes the tc parameter to the value to tc
 % The output of the function are the fitting parameters, tc, tg, wMax and
 % alpha, as weel as the points making up the fitted curve. Optional output:
 % resnorm and residual of the lsqcurvefit and the Bayesian information
 % criterion.
-narginchk(2,3);
-t=varargin{1,1};
-w=varargin{1,2};
-if size(varargin,2) == 2
-    lAlpha=0.1;
-    uAlpha=10;
-    nparam=4;
-    alpha0 = 2;
-elseif size(varargin,2) == 3
-    lAlpha=varargin{1,3};
-    uAlpha=lAlpha;
-    nparam=3;
-    alpha0 = lAlpha;
-else
-    error('Wrong number of input parameters, correct format is fitXiao(timevec, widthvec) or fitXiao(timevec, widthvec, alpha)') 
-end
+narginchk(2,6);
+
+nparam=4;
+lAlpha=0.1;
+uAlpha=10;
+alpha0 = 2;
 tc0 = 0;
+ltc=0;
+utc=max(t);
+
+if size(varargin,2) ~= 0
+    varIn=1;
+    while varIn<numel(varargin)
+        switch varargin{1,varIn}
+            case 'alpha'
+                lAlpha=varargin{1,varIn+1};
+                uAlpha=lAlpha;
+                nparam=nparam-1;
+                alpha0 = lAlpha;
+                varIn=varIn+2;
+            case 'tc'
+                nparam=nparam-1;
+                ltc=varargin{1,varIn+1};
+                utc=ltc;
+                tc0=ltc;
+                nparam=nparam-1;
+                varIn=varIn+2;
+            otherwise
+                error('Invalid input')
+        end
+    end
+end
+wMax0=round(w(1)); % When w is normalized, this should be 1,
+%(unless w(1)<0.5, but this would be a useless cell anyway).
+% When fitting absolute diameters (in nm's) the rounding should be negligable.
 tg0 = max(t);
-wMax0 = 1;
 a0 = [tc0,tg0,wMax0, alpha0];
-lb =[0,0,0.95,lAlpha];
-ub =[max(t),Inf,1.2,uAlpha];
+lb =[ltc,0,0.95*wMax0,lAlpha];
+ub =[utc,Inf,1.2*wMax0,uAlpha];
 [a, resnorm, residual] = lsqcurvefit(@XiaoModel, a0, t, w, lb, ub);
 tc = a(1);
 tg = a(2);
