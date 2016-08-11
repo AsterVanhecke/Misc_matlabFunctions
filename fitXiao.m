@@ -45,13 +45,19 @@ if size(varargin,2) ~= 0
         end
     end
 end
-wMax0=round(w(1)); % When w is normalized, this should be 1,
-%(unless w(1)<0.5, but this would be a useless cell anyway).
-% When fitting absolute diameters (in nm's) the rounding should be negligable.
+if w(1)<2
+    wMax0=1;
+    lwMax0=0.9;
+    uwMax0=1.2;
+else
+    wMax0=500;
+    lwMax0=350;
+    uwMax0=650;
+end
 tg0 = max(t);
 a0 = [tc0,tg0,wMax0, alpha0];
-lb =[ltc,0,0.95*wMax0,lAlpha];
-ub =[utc,Inf,1.2*wMax0,uAlpha];
+lb =[ltc,0,lwMax0,lAlpha];
+ub =[utc,Inf,uwMax0,uAlpha];
 [a, resnorm, residual] = lsqcurvefit(@XiaoModel, a0, t, w, lb, ub);
 tc = a(1);
 tg = a(2);
