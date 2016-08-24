@@ -128,6 +128,10 @@ if exist('fig','var')
     plot(xLeft,yLeft,'+')
     plot(xRight,yRight,'+')
     hold off
+    try
+        title(['Width: ' num2str(width) 'pxl or ' num2str(width*30) ' nm'])
+    catch
+    end
 end
 
 end

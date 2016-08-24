@@ -20,6 +20,7 @@ cfit=fit(X,Y,'poly1');
 % plot(X,Y,'.')
 plot(cfit,X,Y,'predfunc')
 legend('Data', ['Fitted curve: Y= ' num2str(cfit.p1) '*X + ' num2str(cfit.p2)], 'prediction bounds')
+legend off
 corCof=corr(X,Y);
 xlabel(inputname(1))
 ylabel(inputname(2))
