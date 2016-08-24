@@ -52,7 +52,7 @@ if w(1)<2
 else
     wMax0=500;
     lwMax0=350;
-    uwMax0=650;
+    uwMax0=800;
 end
 tg0 = max(t);
 a0 = [tc0,tg0,wMax0, alpha0];
