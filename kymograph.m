@@ -45,7 +45,7 @@ switch demo
                 if ~isempty(ZintAll{cellIdx,frIdx})
                     pos1=(maxLength/2)-round(length(ZintAll{cellIdx,frIdx})/2);
                     M( pos1:(length(ZintAll{cellIdx,frIdx})+pos1-1) , (cellIdx-1)*num_frames+frIdx ) = ...
-                        ZintAll{cellIdx,frIdx}(2,:)';
+                        (ZintAll{cellIdx,frIdx}(2,:)./max(ZintAll{cellIdx,frIdx}(2,:)))';
                 end
             end
         end
@@ -65,7 +65,7 @@ switch demo
                 if ~isempty(ZintAll{cellIdx,frIdx})
                     pos1=(maxLength/2)-round(length(ZintAll{cellIdx,frIdx})/2);
                     M( pos1:(length(ZintAll{cellIdx,frIdx})+pos1-1) , cellIdx ) = ...
-                        ZintAll{cellIdx,frIdx}(2,:)';
+                        (ZintAll{cellIdx,frIdx}(2,:)/max(ZintAll{cellIdx,frIdx}(2,:)))';
                 end
             end
             M=lengthOrderKymo(M,lengthz(:,frIdx));
@@ -91,7 +91,7 @@ end
 
 function plotKymo(varargin)
 M=varargin{1,1};
-M(1,1)=-0.5; % workaround for colormap: distinguish NaN from small values
+M(1,1)=-0.05; % workaround for colormap: distinguish NaN from small values
 if length(varargin)==3
     x=varargin{1,2};
     y=varargin{1,3};
