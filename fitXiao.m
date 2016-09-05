@@ -27,13 +27,13 @@ if size(varargin,2) ~= 0
     varIn=1;
     while varIn<numel(varargin)
         switch varargin{1,varIn}
-            case 'alpha'
+            case {'alpha', 'Alpha'}
                 lAlpha=varargin{1,varIn+1};
                 uAlpha=lAlpha;
                 nparam=nparam-1;
                 alpha0 = lAlpha;
                 varIn=varIn+2;
-            case 'tc'
+            case {'tc','Tc'}
                 nparam=nparam-1;
                 ltc=varargin{1,varIn+1};
                 utc=ltc;
