@@ -27,7 +27,7 @@ inputi=1;
 
 if demogr==1 % get optional input if needed
     while inputi <= length(varargin)
-        if size(varargin{1,inputi},1)==size(ZintAll,1)
+        if size(varargin{1,inputi},1)==size(ZintAll,1) && ~(size(ZintAll,1)==1 || size(ZintAll,1)==2)% exception for size=1 or 2
             Tc=varargin{1,inputi};
             inputi=inputi+1;
         elseif length(varargin{1,inputi})==2
@@ -77,6 +77,7 @@ switch demogr
             end
             y=-maxLength*30:60:maxLength*30;
             plotKymo(M,x,y)
+            title(['kymograph for cell ' num2str(cellIdx)])
             if exist('Tc','var')
                 for ii=1:size(Tc,2)
                     plot([Tc(cellIdx,ii) Tc(cellIdx,ii)], [y(1) y(end)])
@@ -121,6 +122,7 @@ switch demogr
             M=M(:,firstIdx:end);
             y=-maxLength*30:60:maxLength*30;
             plotKymo(M,y)
+            title(['Demograph for frame ' num2str(frIdx) ', at time ' num2str((frIdx-1)*5)])
         end
         
     otherwise
