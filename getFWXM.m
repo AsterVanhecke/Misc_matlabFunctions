@@ -1,11 +1,11 @@
-function [width, xLeft, xRight,yLeft,yRight,posLeftMax,posRightMax]= getFWXM(varargin)
-% Function [width, xLeft, xRight,yLeft,yRight,posLeftMax,posRightMax]=
+function [width, xLeft, xRight,yLeft,yRight,xLeftMax,xRightMax]= getFWXM(varargin)
+% Function [width, xLeft, xRight,yLeft,yRight,xLeftMax,xRightMax]=
 % getFWXM(x,y, 'options')
-% finds full width at X* the max (X=0.5 for full width at  half max), 
+% finds full width at X* the max (X=0.5 for full width at half max), 
 % for (x,y) data than can have multiple peaks.
 % options:
-% - 'Half': Instead of FWHM, find FW at X*max
-% - 'nbreaks': number of breakpoints for splinefitting to find
+% - 'Half', X: Instead of FWHM, find FW at X*max
+% - 'nbreaks', n : number of breakpoints for splinefitting to find
 % maxima.
 % - 'searchStep': step size for search for FWXM
 % - 'FigZ' 
@@ -34,22 +34,26 @@ for i=3:2:size(varargin,2)-1
     end
 end
 
+xgrid=ndgrid(x(1):searchStep:x(end)); % create grid
+pp=splinefit(x,y,nbreaks);
+spline=ppval(pp,xgrid); % We could replace the splinefit by a gridded
+% interpolant, but the data generally has this step behaviour which we want
+% to get rid of with the spline.
 
-pp=splinefit(x,y,nbreaks); % splinefit has the bad property of creating artifacts at the border, esp. when y=0 for multiple consecutive points.
-spline=ppval(pp,x);
-
-[maxI,maxX]=findpeaks(spline,x,'MinPeakHeight',max(spline)/3);
+[maxI,maxX]=findpeaks(spline,'MinPeakHeight',max(spline)/3); % maxX holds 
+% id's for maxima, not position values!
 
 % from found peaks, filter out the real left and right peaks
 switch length(maxX)
-    case 0 % what if no peaks are found?
-        % check if there is a significant edge max.
-        
-        % else
-        posLeftMax=NaN;
-        valLeftMax=NaN;
-        posRightMax=NaN;
-        valRightMax=NaN;
+    case 0 % what if no peaks are found? The maxima are at the edges.
+        width=NaN;
+        xLeft=NaN;
+        xRight=NaN;
+        yLeft=NaN;
+        yRight=NaN;
+        xLeftMax=NaN;
+        xRightMax=NaN;
+        return
     case 1 % only one peak
         posLeftMax=maxX;
         valLeftMax=maxI;
@@ -68,8 +72,6 @@ switch length(maxX)
             valRightMax=maxI(1);
         end
     otherwise % more than two peaks...
-%         disp('getFWXM says: "More than 2 peaks, hard to pick two." ')
-%         %too spammy
         % sort peaks, pick most left and most right peaks.
         [maxX, idx]=sort(maxX,2,'ascend');
         maxI=maxI(idx);
@@ -89,16 +91,16 @@ end
 % From left peak, scan left to find half max
 posLeft = posLeftMax;
 valCur = Inf;
-while posLeft>=x(1) && valCur > valLeftMax*Half
-    posLeft =posLeft-searchStep;
-    valCur = interp1(x,y,posLeft);
+while posLeft>1 && valCur > valLeftMax*Half % posLeft is element id in xgrid/spline!
+    posLeft =posLeft-1;
+    valCur = spline(posLeft);
 end
 % From right peak, scan right to find half max
 posRight = posRightMax;
 valCur = Inf;
-while posRight<=x(end) && valCur > valRightMax*Half
-    posRight =posRight+searchStep;
-    valCur = interp1(x,y,posRight);
+while posRight<length(xgrid) && valCur > valRightMax*Half
+    posRight =posRight+1;
+    valCur = spline(posRight);
 end
 
 %%DEBUG
@@ -111,20 +113,23 @@ end
 % plot(posRight,valRightMax/2,'bo');
 %%DEBUG
 
-width = posRight-posLeft;
-xLeft = posLeft;
-xRight = posRight;
-yLeft =valLeftMax/2;
-yRight =valRightMax/2;
+xLeft = xgrid(posLeft);
+xRight = xgrid(posRight);
+width = xRight-xLeft;
+yLeft =valLeftMax*Half;
+yRight =valRightMax*Half;
+xLeftMax=xgrid(posLeftMax);
+xRightMax=xgrid(posRightMax);
 
 % Figure for measureZ.m in the SIM analysis pipeline.
 if exist('fig','var')
     figure(fig),
     subplot(2,2,2)
     plot(x,y)
-    hold on, plot(x,spline)
-    plot(posLeftMax,valLeftMax,'+')
-    plot(posRightMax,valRightMax,'+')
+    hold on,
+    plot(xgrid,spline)
+    plot(xLeftMax,valLeftMax,'+')
+    plot(xRightMax,valRightMax,'+')
     plot(xLeft,yLeft,'+')
     plot(xRight,yRight,'+')
     hold off
