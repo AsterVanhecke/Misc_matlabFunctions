@@ -30,18 +30,18 @@ function unit=label(lab,ax)
 % this axis.
 switch lab
     case 'dl'
-        unit='nm';
+        unit='um';
         if strcmp(ax,'x')
-            xlabel('Elongation (nm)')
+            xlabel('Elongation (µm)')
         else
-            ylabel('Elongation (nm)')
+            ylabel('Elongation (µm)')
         end
     case 'l'
-        unit='nm';
+        unit='um';
         if strcmp(ax,'x')
-            xlabel('Length (nm)')
+            xlabel('Length (µm)')
         else
-            ylabel('Length (nm)')
+            ylabel('Length (µm)')
         end
     case 't'
         unit='min';
@@ -63,6 +63,13 @@ switch lab
             xlabel('probability density')
         else
             ylabel('probability density')
+        end
+    case 'k'
+        unit='k';
+        if strcmp(ax,'x')
+            xlabel('Exponent of elongation')
+        else
+            ylabel('Exponent of elongation')
         end
 end
 end
