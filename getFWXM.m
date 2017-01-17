@@ -73,7 +73,7 @@ switch length(maxX)
         end
     otherwise % more than two peaks...
         % sort peaks, pick most left and most right peaks.
-        [maxX, idx]=sort(maxX,2,'ascend');
+        [maxX, idx]=sort(maxX,1,'ascend');
         maxI=maxI(idx);
         posLeftMax=maxX(1);
         valLeftMax=maxI(1);
@@ -124,7 +124,6 @@ xRightMax=xgrid(posRightMax);
 % Figure for measureZ.m in the SIM analysis pipeline.
 if exist('fig','var')
     figure(fig),
-    subplot(2,2,2)
     plot(x,y)
     hold on,
     plot(xgrid,spline)
@@ -132,6 +131,7 @@ if exist('fig','var')
     plot(xRightMax,valRightMax,'+')
     plot(xLeft,yLeft,'+')
     plot(xRight,yRight,'+')
+    ylim([0 Inf])
     hold off
     try
         title(['Width: ' num2str(width) 'pxl or ' num2str(width*30) ' nm'])
