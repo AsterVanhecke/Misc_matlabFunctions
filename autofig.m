@@ -71,5 +71,19 @@ switch lab
         else
             ylabel('Exponent of elongation')
         end
+    case 'sav'
+        unit='sav';
+        if strcmp(ax,'x')
+            xlabel('Surface area to volume ratio (µm^{-1})')
+        else
+            ylabel('Surface area to volume ratio (µm^{-1})')
+        end
+    case 'dsav'
+        unit='sav';
+        if strcmp(ax,'x')
+            xlabel('Difference in surface area to volume ratio (µm^{-1})')
+        else
+            ylabel('Difference in surface area to volume ratio (µm^{-1})')
+        end
 end
 end
