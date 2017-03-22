@@ -63,7 +63,7 @@ switch demogr
         % Kymographs for each cell
         for cellIdx=1:num_cells
             maxFrame=find(lengthz(cellIdx,:),1,'last'); % find the last frame containing information
-            M=NaN(maxLength,maxFrame);
+            M=zeros(maxLength,maxFrame);
             for frIdx=1:maxFrame
                 if ~isempty(ZintAll{cellIdx,frIdx})
                     pos1=(maxLength/2)-floor(length(ZintAll{cellIdx,frIdx})/2);
@@ -91,7 +91,7 @@ switch demogr
         for cellIdx=1:num_cells
             for frIdx=1:num_frames
                 if ~isempty(ZintAll{cellIdx,frIdx})
-                    pos1=(maxLength/2)-round(length(ZintAll{cellIdx,frIdx})/2);
+                    pos1=(maxLength/2)-floor(length(ZintAll{cellIdx,frIdx})/2);
                     M( pos1:(length(ZintAll{cellIdx,frIdx})+pos1-1) , (cellIdx-1)*num_frames+frIdx ) = ...
                         (ZintAll{cellIdx,frIdx}(2,:)./max(ZintAll{cellIdx,frIdx}(2,:)))';
                 end
@@ -111,7 +111,7 @@ switch demogr
             M=NaN(maxLength,num_cells);
             for cellIdx=1:num_cells
                 if ~isempty(ZintAll{cellIdx,frIdx})
-                    pos1=(maxLength/2)-round(length(ZintAll{cellIdx,frIdx})/2);
+                    pos1=(maxLength/2)-floor(length(ZintAll{cellIdx,frIdx})/2);
                     M( pos1:(length(ZintAll{cellIdx,frIdx})+pos1-1) , cellIdx ) = ...
                         (ZintAll{cellIdx,frIdx}(2,:)/max(ZintAll{cellIdx,frIdx}(2,:)))';
                 end
