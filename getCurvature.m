@@ -73,36 +73,37 @@ function [k, dfdx, d2fdx2, x, y] = getCurvature(xTemp, yTemp)
 %        figure, plot(xTempTemp, yTempTemp, 'go'),  axis equal
      end
 
-    if isempty( find(diff(yTempTemp)>0 | diff(xTempTemp)>0 )) % if the function is monothonic
-    fitMod = griddedInterpolant(xTempTemp, yTempTemp, 'spline');
-    % Not more 5nm precision expected
-    %x = (min(xTempTemp):20:max(xTempTemp));
-    xx = xTempTemp;
-    yy = fitMod(xx);
-
-    y=smooth(xx, yy, 'rloess');
-    [x,ind] = sort(xx);
-    y = y(ind);
-    % Compute the first and second derivative
-    [dfdx, d2fdx2] = dfdxc(x,y');
-    %k = sqrt(d2fdx2.^2);
-
-    % Compute the curvature k
-    k = sqrt(d2fdx2.^2).*(1./(1 + (dfdx).^2).^(3/2));
-    else
-        
-    xx = xTempTemp;
-    yy = yTempTemp;  
-    y=smooth(xx, yy, 'rloess');
-    [x,ind] = sort(xx);
-    y = y(ind);
-    % Compute the first and second derivative
-    [dfdx, d2fdx2] = dfdxc(x,y');
-    %k = sqrt(d2fdx2.^2);
-
-    % Compute the curvature k
-    k = sqrt(d2fdx2.^2).*(1./(1 + (dfdx).^2).^(3/2));
-    end
+     if isempty( find(diff(yTempTemp)<0 | diff(xTempTemp)<0 ,1)) % if the function is monothonic
+         % TODO: check if it is monotonically INCREASING
+         fitMod = griddedInterpolant(xTempTemp, yTempTemp, 'spline');
+         % Not more 5nm precision expected
+         %x = (min(xTempTemp):20:max(xTempTemp));
+         xx = xTempTemp;
+         yy = fitMod(xx);
+         
+         y=smooth(xx, yy, 'rloess');
+         [x,ind] = sort(xx);
+         y = y(ind);
+         % Compute the first and second derivative
+         [dfdx, d2fdx2] = dfdxc(x,y');
+         %k = sqrt(d2fdx2.^2);
+         
+         % Compute the curvature k
+         k = sqrt(d2fdx2.^2).*(1./(1 + (dfdx).^2).^(3/2));
+     else
+         
+         xx = xTempTemp;
+         yy = yTempTemp;
+         y=smooth(xx, yy, 'rloess');
+         [x,ind] = sort(xx);
+         y = y(ind);
+         % Compute the first and second derivative
+         [dfdx, d2fdx2] = dfdxc(x,y');
+         %k = sqrt(d2fdx2.^2);
+         
+         % Compute the curvature k
+         k = sqrt(d2fdx2.^2).*(1./(1 + (dfdx).^2).^(3/2));
+     end
     
     
     % Set figure properties
