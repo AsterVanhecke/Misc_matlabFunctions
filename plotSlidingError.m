@@ -34,7 +34,7 @@ trim=5;
 argIdx=1;
 while argIdx<=length(varargin)
     switch varargin{argIdx}
-        case 'std'
+        case {'std', 'STD'}
             plotSTD=true;
             if length(varargin)>=argIdx+1
                 if isnumeric(varargin{argIdx+1}) && numel(varargin{argIdx+1})==3 && length(varargin{argIdx+1})==3 %size(varargin{argIdx+1})==[1,3]
@@ -42,7 +42,7 @@ while argIdx<=length(varargin)
                     argIdx=argIdx+1;
                 end
             end
-        case 'sem'
+        case {'sem', 'SEM'}
             plotSEM=true;
             if length(varargin)>=argIdx+1
                 if isnumeric(varargin{argIdx+1}) && numel(varargin{argIdx+1})==3 && length(varargin{argIdx+1})==3
